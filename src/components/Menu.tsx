@@ -18,9 +18,7 @@ const Menu: React.FC<MenuProps> = ({ onSelectDifficulty, highScore }) => {
 
   return (
     <div className="w-[500px] h-[500px] flex flex-col items-center justify-center text-black/75 ring-4 ring-black/75">
-      <div className="text-6xl font-bold mb-10 flex items-center">
-        <span className="tracking-wider">snake</span>
-      </div>
+      <h1 className="text-6xl font-bold mb-10 tracking-wider">snake</h1>
 
       <div className="text-2lg font-bold mb-10">CHOOSE LEVEL:</div>
 

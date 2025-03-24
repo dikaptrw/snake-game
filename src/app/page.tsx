@@ -18,6 +18,10 @@ export default function Home() {
 
       {gameState.gameStatus === "PLAYING" && (
         <div className="relative game-board-container">
+          <h1 className="absolute inset-x-0 text-center bottom-full mb-6 text-3xl font-bold tracking-wider">
+            snake
+          </h1>
+
           <GameBoard
             snake={gameState.snake}
             food={gameState.food}
