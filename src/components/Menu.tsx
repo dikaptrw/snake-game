@@ -30,7 +30,7 @@ const Menu: React.FC<MenuProps> = ({ onSelectDifficulty, highScore }) => {
             key={menu}
             onMouseEnter={() => setMenuActive(menu)}
             onClick={() => onSelectDifficulty(menu)}
-            className={`text-xl font-bold px-3 py-3 rounded-md hover:bg-black/75 cursor-pointer hover:text-[#9bba5a] transition-transform ${
+            className={`text-xl font-bold px-3 py-3 rounded-md cursor-pointer transition-transform ${
               menuActive === menu ? "bg-black/75 text-[#9bba5a]" : ""
             }`}
           >

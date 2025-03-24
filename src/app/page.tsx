@@ -22,6 +22,7 @@ export default function Home() {
             snake={gameState.snake}
             food={gameState.food}
             gridSize={GRID_SIZE}
+            direction={gameState.direction}
           />
 
           <FoodAnimation food={gameState.food} gridSize={GRID_SIZE} />

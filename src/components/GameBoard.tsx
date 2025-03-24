@@ -1,16 +1,33 @@
 import React from "react";
-import { Position } from "@/types";
+import { Direction, Position } from "@/types";
 
 interface GameBoardProps {
   snake: Position[];
   food: Position;
   gridSize: number;
+  direction: Direction;
 }
 
-const GameBoard: React.FC<GameBoardProps> = ({ snake, food, gridSize }) => {
+const GameBoard: React.FC<GameBoardProps> = ({
+  snake,
+  food,
+  gridSize,
+  direction,
+}) => {
   // Calculate cell size based on viewport
   const cellSize = 20;
   const boardSize = gridSize * cellSize;
+
+  const handleHeadWormClass = () => {
+    if (direction === "UP")
+      return "after:top-1 after:left-1 before:top-1 before:right-1";
+    if (direction === "DOWN")
+      return "after:bottom-1 after:right-1 before:bottom-1 before:left-1";
+    if (direction === "LEFT")
+      return "after:top-1 after:left-1 before:bottom-1 before:left-1";
+    if (direction === "RIGHT")
+      return "after:top-1 after:right-1 before:bottom-1 before:right-1";
+  };
 
   return (
     <div
@@ -40,7 +57,13 @@ const GameBoard: React.FC<GameBoardProps> = ({ snake, food, gridSize }) => {
       {snake.map((segment, index) => (
         <div
           key={index}
-          className="absolute bg-[#262E17]"
+          className={[
+            "absolute bg-[#262E17]",
+            index === 0 &&
+              `after:absolute after:bg-[#9bba5a] after:w-1 after:h-1
+            before:absolute before:bg-[#9bba5a] before:w-1 before:h-1`,
+            index === 0 && handleHeadWormClass(),
+          ].join(" ")}
           style={{
             left: `${segment.x * cellSize}px`,
             top: `${segment.y * cellSize}px`,
