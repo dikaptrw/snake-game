@@ -1,5 +1,5 @@
-import React from 'react';
-import { Difficulty } from '@/types';
+import React from "react";
+import { Difficulty } from "@/types";
 
 interface GameOverProps {
   score: number;
@@ -7,31 +7,27 @@ interface GameOverProps {
   onRestart: () => void;
 }
 
-const GameOver: React.FC<GameOverProps> = ({ score, difficulty, onRestart }) => {
+const GameOver: React.FC<GameOverProps> = ({
+  score,
+  difficulty,
+  onRestart,
+}) => {
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div className="text-black text-5xl font-bold mb-8">
-        GAME
+    <div className="w-[500px] h-[500px] flex flex-col items-center justify-center text-black/75 ring-4 ring-black/75">
+      <div className="text-6xl font-bold mb-10 flex items-center text-center leading-18">
+        Game Over!
       </div>
-      <div className="text-black text-5xl font-bold mb-12">
-        OVER!
+      <div className="flex items-center justify-center mb-10">
+        <div className="text-2xl font-bold mr-4">{difficulty}</div>
+        <div className="text-2xl font-bold">{score}</div>
       </div>
-      
-      <div className="flex items-center justify-center mb-8">
-        <div className="text-black text-2xl font-bold mr-4">
-          {difficulty}
-        </div>
-        <div className="text-black text-2xl font-bold">
-          {score}
-        </div>
-      </div>
-      
-      <button 
+      <button
         onClick={onRestart}
-        className="text-black text-2xl font-bold hover:scale-110 transition-transform"
+        className="text-xl font-bold px-4 py-3 rounded-md bg-black/75 cursor-pointer text-[#9bba5a] transition-transform"
       >
         RESTART
       </button>
+      =
     </div>
   );
 };

@@ -1,16 +1,33 @@
-@import url("https://fonts.googleapis.com/css2?family=VT323&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap");
 
 @import "tailwindcss";
 
+@theme {
+  --breakpoint-xs: 376px;
+  --breakpoint-2xs: 540px;
+  --breakpoint-sm: 640px;
+  --breakpoint-2sm: 710px;
+  --breakpoint-md: 768px;
+  --breakpoint-2md: 912px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-2lg: 1152px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  --spacing-18: 4.5rem;
+
+  --leading-18: 4.5rem;
+}
+
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-rgb: 132, 177, 75;
+  --foreground-rgb: 0, 0, 0, 0.75;
+  --background-rgb: 155, 186, 90;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-rgb));
-  font-family: "VT323", monospace;
+  font-family: "Press Start 2P", monospace;
 }
 
 .game-container {

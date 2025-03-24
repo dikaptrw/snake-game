@@ -1,42 +1,40 @@
-import React from 'react';
-import { Difficulty } from '@/types';
+import React, { useState } from "react";
+import { Difficulty } from "@/types";
 
 interface MenuProps {
   onSelectDifficulty: (difficulty: Difficulty) => void;
 }
 
+export enum MenuEnum {
+  SLUG = "SLUG",
+  WORM = "WORM",
+  PYTHON = "PYTHON",
+}
+
 const Menu: React.FC<MenuProps> = ({ onSelectDifficulty }) => {
+  const [menuActive, setMenuActive] = useState<MenuEnum>(MenuEnum.SLUG);
+
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div className="text-black text-5xl font-bold mb-8 flex items-center">
-        <span className="mr-2">+</span>
+    <div className="w-[500px] h-[500px] flex flex-col items-center justify-center text-black/75 ring-4 ring-black/75">
+      <div className="text-6xl font-bold mb-10 flex items-center">
         <span className="tracking-wider">snake</span>
-        <span className="ml-2">+</span>
       </div>
-      
-      <div className="text-black text-2xl font-bold mb-8">
-        CHOOSE LEVEL:
-      </div>
-      
-      <div className="flex flex-col space-y-4">
-        <button 
-          onClick={() => onSelectDifficulty('SLUG')}
-          className="text-black text-3xl font-bold hover:scale-110 transition-transform"
-        >
-          SLUG
-        </button>
-        <button 
-          onClick={() => onSelectDifficulty('WORM')}
-          className="text-black text-3xl font-bold hover:scale-110 transition-transform"
-        >
-          WORM
-        </button>
-        <button 
-          onClick={() => onSelectDifficulty('PYTHON')}
-          className="text-black text-3xl font-bold hover:scale-110 transition-transform"
-        >
-          PYTHON
-        </button>
+
+      <div className="text-2lg font-bold mb-10">CHOOSE LEVEL:</div>
+
+      <div className="flex gap-3">
+        {Object.values(MenuEnum).map((menu) => (
+          <button
+            key={menu}
+            onMouseEnter={() => setMenuActive(menu)}
+            onClick={() => onSelectDifficulty(menu)}
+            className={`text-xl font-bold px-3 py-3 rounded-md hover:bg-black/75 cursor-pointer hover:text-[#9bba5a] transition-transform ${
+              menuActive === menu ? "bg-black/75 text-[#9bba5a]" : ""
+            }`}
+          >
+            {menu}
+          </button>
+        ))}
       </div>
     </div>
   );
