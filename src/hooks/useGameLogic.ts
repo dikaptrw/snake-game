@@ -6,6 +6,9 @@ import useDevice from "./useDevice";
 const INITIAL_SNAKE_LENGTH = 3;
 const INITIAL_DIRECTION: Direction = "RIGHT";
 
+// Minimum swipe distance (in pixels) to register as a swipe
+const MIN_SWIPE_DISTANCE = 30;
+
 // Speed in milliseconds for each difficulty level
 const SPEED_MAP = {
   SLUG: 200,
@@ -32,6 +35,7 @@ export const useGameLogic = () => {
   });
 
   const gameLoopRef = useRef<NodeJS.Timeout | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   // Handle first render for high score
   useEffect(() => {
@@ -264,6 +268,75 @@ export const useGameLogic = () => {
       highScore: gameState.highScore,
     });
   }, [gameState.highScore]);
+
+  // Handle touch input for mobile
+  useEffect(() => {
+    const handleTouchStart = (e: TouchEvent) => {
+      if (gameState.gameStatus !== "PLAYING") return;
+
+      const touch = e.touches[0];
+      touchStartRef.current = {
+        x: touch.clientX,
+        y: touch.clientY,
+      };
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (gameState.gameStatus !== "PLAYING" || !touchStartRef.current) return;
+
+      const touch = e.changedTouches[0];
+      const endX = touch.clientX;
+      const endY = touch.clientY;
+
+      const startX = touchStartRef.current.x;
+      const startY = touchStartRef.current.y;
+
+      const diffX = endX - startX;
+      const diffY = endY - startY;
+
+      // Check if the swipe distance is significant enough
+      if (
+        Math.abs(diffX) < MIN_SWIPE_DISTANCE &&
+        Math.abs(diffY) < MIN_SWIPE_DISTANCE
+      ) {
+        return; // Not a significant swipe
+      }
+
+      // Determine swipe direction
+      if (Math.abs(diffX) > Math.abs(diffY)) {
+        // Horizontal swipe
+        if (diffX > 0) {
+          changeDirection("RIGHT");
+        } else {
+          changeDirection("LEFT");
+        }
+      } else {
+        // Vertical swipe
+        if (diffY > 0) {
+          changeDirection("DOWN");
+        } else {
+          changeDirection("UP");
+        }
+      }
+
+      touchStartRef.current = null;
+    };
+
+    const handleTouchCancel = () => {
+      touchStartRef.current = null;
+    };
+
+    // Add touch event listeners
+    window.addEventListener("touchstart", handleTouchStart);
+    window.addEventListener("touchend", handleTouchEnd);
+    window.addEventListener("touchcancel", handleTouchCancel);
+
+    return () => {
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchend", handleTouchEnd);
+      window.removeEventListener("touchcancel", handleTouchCancel);
+    };
+  }, [changeDirection, gameState.gameStatus]);
 
   // Handle keyboard input
   useEffect(() => {
