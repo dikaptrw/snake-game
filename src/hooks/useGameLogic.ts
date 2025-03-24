@@ -22,37 +22,93 @@ export const useGameLogic = () => {
     score: 0,
     gameStatus: "MENU",
     difficulty: null,
+    highScore: {
+      SLUG: 0,
+      WORM: 0,
+      PYTHON: 0,
+    },
   });
 
   const gameLoopRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Initialize game
-  const initGame = useCallback((difficulty: Difficulty) => {
-    // Create initial snake in the middle of the board
-    const initialSnake: Position[] = [];
-    const midPoint = Math.floor(GRID_SIZE / 2);
+  // Handle first render for high score
+  useEffect(() => {
+    const highScore = localStorage.getItem("highScore");
 
-    for (let i = 0; i < INITIAL_SNAKE_LENGTH; i++) {
-      initialSnake.push({
-        x: midPoint - i,
-        y: midPoint,
-      });
+    if (highScore) {
+      setGameState((prevState) => ({
+        ...prevState,
+        highScore: JSON.parse(highScore),
+      }));
     }
-
-    // Generate initial food position
-    const initialFood = generateFood(initialSnake);
-
-    // Set initial game state
-    setGameState({
-      snake: initialSnake,
-      food: initialFood,
-      direction: INITIAL_DIRECTION,
-      nextDirection: INITIAL_DIRECTION,
-      score: 0,
-      gameStatus: "PLAYING",
-      difficulty,
-    });
   }, []);
+
+  // Handle high score
+  const handleHighScore = useCallback(() => {
+    if (!gameState.difficulty) return;
+
+    const currentHighScore = gameState.highScore[gameState.difficulty];
+    const newHighScore = Math.max(currentHighScore, gameState.score);
+
+    console.log("New high score:", {
+      ...gameState.highScore,
+      [gameState.difficulty]: newHighScore,
+    });
+
+    // Save to local storage
+    console.log("gameState.highScore", gameState.highScore);
+
+    localStorage.setItem(
+      "highScore",
+      JSON.stringify({
+        ...gameState.highScore,
+        [gameState.difficulty]: newHighScore,
+      })
+    );
+
+    setGameState((prevState) => ({
+      ...prevState,
+      highScore: {
+        ...prevState.highScore,
+        [gameState.difficulty!]: newHighScore,
+      },
+    }));
+  }, [gameState.difficulty, gameState.highScore, gameState.score]);
+
+  // Initialize game
+  const initGame = useCallback(
+    (difficulty: Difficulty) => {
+      // Create initial snake in the middle of the board
+      const initialSnake: Position[] = [];
+      const midPoint = Math.floor(GRID_SIZE / 2);
+
+      for (let i = 0; i < INITIAL_SNAKE_LENGTH; i++) {
+        initialSnake.push({
+          x: midPoint - i,
+          y: midPoint,
+        });
+      }
+
+      // Generate initial food position
+      const initialFood = generateFood(initialSnake);
+
+      // Set initial game state
+      setGameState({
+        snake: initialSnake,
+        food: initialFood,
+        direction: INITIAL_DIRECTION,
+        nextDirection: INITIAL_DIRECTION,
+        score: 0,
+        gameStatus: "PLAYING",
+        difficulty,
+        highScore: gameState.highScore,
+      });
+
+      // Set initial high score
+      handleHighScore();
+    },
+    [handleHighScore, gameState.highScore]
+  );
 
   // Generate food at random position (not on snake)
   const generateFood = (snake: Position[]): Position => {
@@ -129,6 +185,8 @@ export const useGameLogic = () => {
         head.y < 0 ||
         head.y >= GRID_SIZE
       ) {
+        handleHighScore();
+
         return {
           ...prevState,
           gameStatus: "GAME_OVER",
@@ -142,6 +200,8 @@ export const useGameLogic = () => {
         .some((segment) => segment.x === head.x && segment.y === head.y);
 
       if (selfCollision) {
+        handleHighScore();
+
         return {
           ...prevState,
           gameStatus: "GAME_OVER",
@@ -174,7 +234,7 @@ export const useGameLogic = () => {
         score: newScore,
       };
     });
-  }, []);
+  }, [handleHighScore]);
 
   // Start game loop
   const startGameLoop = useCallback(() => {
@@ -203,8 +263,9 @@ export const useGameLogic = () => {
       score: 0,
       gameStatus: "MENU",
       difficulty: null,
+      highScore: gameState.highScore,
     });
-  }, []);
+  }, [gameState.highScore]);
 
   // Handle keyboard input
   useEffect(() => {

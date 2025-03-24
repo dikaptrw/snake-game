@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <main className="game-container">
       {gameState.gameStatus === "MENU" && (
-        <Menu onSelectDifficulty={initGame} />
+        <Menu onSelectDifficulty={initGame} highScore={gameState.highScore} />
       )}
 
       {gameState.gameStatus === "PLAYING" && (
@@ -30,6 +30,7 @@ export default function Home() {
             <ScoreDisplay
               score={gameState.score}
               difficulty={gameState.difficulty}
+              highScore={gameState.highScore}
             />
           )}
         </div>
@@ -40,6 +41,7 @@ export default function Home() {
           score={gameState.score}
           difficulty={gameState.difficulty}
           onRestart={resetGame}
+          highScore={gameState.highScore}
         />
       )}
     </main>

@@ -1,7 +1,7 @@
 // Game types
-export type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
-export type GameStatus = 'MENU' | 'PLAYING' | 'GAME_OVER';
-export type Difficulty = 'SLUG' | 'WORM' | 'PYTHON';
+export type Direction = "UP" | "DOWN" | "LEFT" | "RIGHT";
+export type GameStatus = "MENU" | "PLAYING" | "GAME_OVER";
+export type Difficulty = "SLUG" | "WORM" | "PYTHON";
 
 export interface Position {
   x: number;
@@ -16,4 +16,5 @@ export interface GameState {
   score: number;
   gameStatus: GameStatus;
   difficulty: Difficulty | null;
+  highScore: Record<Difficulty, number>;
 }

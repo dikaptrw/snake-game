@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Difficulty } from "@/types";
+import HighScore from "./HighScore";
 
 interface MenuProps {
   onSelectDifficulty: (difficulty: Difficulty) => void;
+  highScore: Record<Difficulty, number>;
 }
 
 export enum MenuEnum {
@@ -11,7 +13,7 @@ export enum MenuEnum {
   PYTHON = "PYTHON",
 }
 
-const Menu: React.FC<MenuProps> = ({ onSelectDifficulty }) => {
+const Menu: React.FC<MenuProps> = ({ onSelectDifficulty, highScore }) => {
   const [menuActive, setMenuActive] = useState<MenuEnum>(MenuEnum.SLUG);
 
   return (
@@ -36,6 +38,8 @@ const Menu: React.FC<MenuProps> = ({ onSelectDifficulty }) => {
           </button>
         ))}
       </div>
+
+      <HighScore highScore={highScore} />
     </div>
   );
 };

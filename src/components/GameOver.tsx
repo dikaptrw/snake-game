@@ -1,16 +1,19 @@
 import React from "react";
 import { Difficulty } from "@/types";
+import HighScore from "./HighScore";
 
 interface GameOverProps {
   score: number;
   difficulty: Difficulty;
   onRestart: () => void;
+  highScore: Record<Difficulty, number>;
 }
 
 const GameOver: React.FC<GameOverProps> = ({
   score,
   difficulty,
   onRestart,
+  highScore,
 }) => {
   return (
     <div className="w-[500px] h-[500px] flex flex-col items-center justify-center text-black/75 ring-4 ring-black/75">
@@ -27,7 +30,8 @@ const GameOver: React.FC<GameOverProps> = ({
       >
         RESTART
       </button>
-      =
+
+      <HighScore highScore={highScore} />
     </div>
   );
 };
