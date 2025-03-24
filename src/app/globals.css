@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap");
-
 @import "tailwindcss";
 
 @theme {
@@ -30,7 +28,6 @@
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-rgb));
-  font-family: "Press Start 2P", monospace;
 }
 
 .game-container {
