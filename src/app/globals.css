@@ -17,6 +17,9 @@
   --spacing-18: 4.5rem;
 
   --leading-18: 4.5rem;
+
+  --text-xxs: 0.625rem;
+  --text-2xs: 0.8125rem;
 }
 
 :root {

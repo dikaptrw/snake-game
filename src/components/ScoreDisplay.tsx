@@ -13,7 +13,7 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
   highScore,
 }) => {
   return (
-    <div className="absolute inset-x-0 top-full mt-3 flex justify-between w-full text-black/75 text-xl">
+    <div className="absolute inset-x-0 top-full mt-3 flex justify-between w-full text-black/75 text-sm sm:text-xl">
       <div className="font-bold">HS:{highScore[difficulty]}</div>
       <div className="flex items-center">
         <div className="font-bold mr-2">{difficulty}</div>

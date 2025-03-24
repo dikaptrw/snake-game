@@ -17,10 +17,14 @@ const Menu: React.FC<MenuProps> = ({ onSelectDifficulty, highScore }) => {
   const [menuActive, setMenuActive] = useState<MenuEnum>(MenuEnum.SLUG);
 
   return (
-    <div className="w-[500px] h-[500px] flex flex-col items-center justify-center text-black/75 ring-4 ring-black/75">
-      <h1 className="text-6xl font-bold mb-10 tracking-wider">snake</h1>
+    <div className="w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] flex flex-col items-center justify-center text-black/75 ring-4 ring-black/75">
+      <h1 className="text-3xl sm:text-6xl font-bold mb-6 sm:mb-10 tracking-wider">
+        snake
+      </h1>
 
-      <div className="text-2lg font-bold mb-10">CHOOSE LEVEL:</div>
+      <div className="text-xxs sm:text-2lg font-bold mb-6 sm:mb-10">
+        CHOOSE LEVEL:
+      </div>
 
       <div className="flex gap-3">
         {Object.values(MenuEnum).map((menu) => (
@@ -28,7 +32,7 @@ const Menu: React.FC<MenuProps> = ({ onSelectDifficulty, highScore }) => {
             key={menu}
             onMouseEnter={() => setMenuActive(menu)}
             onClick={() => onSelectDifficulty(menu)}
-            className={`text-xl font-bold px-3 py-3 rounded-md cursor-pointer transition-transform ${
+            className={`text-xs sm:text-xl font-bold p-2 sm:p-3 rounded-md cursor-pointer transition-transform ${
               menuActive === menu ? "bg-black/75 text-[#9bba5a]" : ""
             }`}
           >

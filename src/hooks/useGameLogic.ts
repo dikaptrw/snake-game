@@ -1,8 +1,8 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { Direction, GameState, Position, Difficulty } from "@/types";
+import useDevice from "./useDevice";
 
 // Define game constants
-const GRID_SIZE = 25;
 const INITIAL_SNAKE_LENGTH = 3;
 const INITIAL_DIRECTION: Direction = "RIGHT";
 
@@ -14,6 +14,8 @@ const SPEED_MAP = {
 };
 
 export const useGameLogic = () => {
+  const { isMobile } = useDevice();
+  const gridSize = useMemo(() => (isMobile ? 15 : 25), [isMobile]);
   const [gameState, setGameState] = useState<GameState>({
     snake: [],
     food: { x: 0, y: 0 },
@@ -50,14 +52,7 @@ export const useGameLogic = () => {
     const currentHighScore = gameState.highScore[gameState.difficulty];
     const newHighScore = Math.max(currentHighScore, gameState.score);
 
-    console.log("New high score:", {
-      ...gameState.highScore,
-      [gameState.difficulty]: newHighScore,
-    });
-
     // Save to local storage
-    console.log("gameState.highScore", gameState.highScore);
-
     localStorage.setItem(
       "highScore",
       JSON.stringify({
@@ -75,12 +70,34 @@ export const useGameLogic = () => {
     }));
   }, [gameState.difficulty, gameState.highScore, gameState.score]);
 
+  // Generate food at random position (not on snake)
+  const generateFood = useCallback(
+    (snake: Position[]): Position => {
+      let newFood: Position;
+      let foodOnSnake = true;
+
+      while (foodOnSnake) {
+        newFood = {
+          x: Math.floor(Math.random() * gridSize),
+          y: Math.floor(Math.random() * gridSize),
+        };
+
+        foodOnSnake = snake.some(
+          (segment) => segment.x === newFood.x && segment.y === newFood.y
+        );
+      }
+
+      return newFood!;
+    },
+    [gridSize]
+  );
+
   // Initialize game
   const initGame = useCallback(
     (difficulty: Difficulty) => {
       // Create initial snake in the middle of the board
       const initialSnake: Position[] = [];
-      const midPoint = Math.floor(GRID_SIZE / 2);
+      const midPoint = Math.floor(gridSize / 2);
 
       for (let i = 0; i < INITIAL_SNAKE_LENGTH; i++) {
         initialSnake.push({
@@ -107,27 +124,8 @@ export const useGameLogic = () => {
       // Set initial high score
       handleHighScore();
     },
-    [handleHighScore, gameState.highScore]
+    [handleHighScore, gameState.highScore, generateFood, gridSize]
   );
-
-  // Generate food at random position (not on snake)
-  const generateFood = (snake: Position[]): Position => {
-    let newFood: Position;
-    let foodOnSnake = true;
-
-    while (foodOnSnake) {
-      newFood = {
-        x: Math.floor(Math.random() * GRID_SIZE),
-        y: Math.floor(Math.random() * GRID_SIZE),
-      };
-
-      foodOnSnake = snake.some(
-        (segment) => segment.x === newFood.x && segment.y === newFood.y
-      );
-    }
-
-    return newFood!;
-  };
 
   // Handle direction change
   const changeDirection = useCallback((newDirection: Direction) => {
@@ -181,9 +179,9 @@ export const useGameLogic = () => {
       // Check for wall collision
       if (
         head.x < 0 ||
-        head.x >= GRID_SIZE ||
+        head.x >= gridSize ||
         head.y < 0 ||
-        head.y >= GRID_SIZE
+        head.y >= gridSize
       ) {
         handleHighScore();
 
@@ -234,7 +232,7 @@ export const useGameLogic = () => {
         score: newScore,
       };
     });
-  }, [handleHighScore]);
+  }, [handleHighScore, gridSize, generateFood]);
 
   // Start game loop
   const startGameLoop = useCallback(() => {
@@ -316,6 +314,6 @@ export const useGameLogic = () => {
     gameState,
     initGame,
     resetGame,
-    GRID_SIZE,
+    gridSize,
   };
 };
