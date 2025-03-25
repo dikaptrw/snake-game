@@ -39,7 +39,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
     >
       {/* Render food */}
       <div
-        className="absolute text-[#262E17] text-2xl font-bold"
+        className="absolute text-[#262E17] text-2xl font-bold select-none"
         style={{
           left: `${food.x * cellSize}px`,
           top: `${food.y * cellSize}px`,
@@ -58,7 +58,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         <div
           key={index}
           className={[
-            "absolute bg-[#262E17]",
+            "absolute bg-[#262E17] select-none",
             index === 0 &&
               `after:absolute after:bg-[#9bba5a] after:w-1 after:h-1
             before:absolute before:bg-[#9bba5a] before:w-1 before:h-1`,

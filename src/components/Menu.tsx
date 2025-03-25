@@ -22,7 +22,7 @@ const Menu: React.FC<MenuProps> = ({ onSelectDifficulty, highScore }) => {
         snake
       </h1>
 
-      <div className="text-xxs sm:text-2lg font-bold mb-6 sm:mb-10">
+      <div className="text-xxs sm:text-xl font-bold mb-6 sm:mb-10">
         CHOOSE LEVEL:
       </div>
 
