@@ -281,44 +281,44 @@ export const useGameLogic = () => {
       };
     };
 
-    const handleTouchEnd = (e: TouchEvent) => {
+    const handleTouchMove = (e: TouchEvent) => {
       if (gameState.gameStatus !== "PLAYING" || !touchStartRef.current) return;
 
-      const touch = e.changedTouches[0];
-      const endX = touch.clientX;
-      const endY = touch.clientY;
+      const touch = e.touches[0];
+      const currentX = touch.clientX;
+      const currentY = touch.clientY;
 
       const startX = touchStartRef.current.x;
       const startY = touchStartRef.current.y;
 
-      const diffX = endX - startX;
-      const diffY = endY - startY;
+      const diffX = currentX - startX;
+      const diffY = currentY - startY;
 
-      // Check if the swipe distance is significant enough
       if (
         Math.abs(diffX) < MIN_SWIPE_DISTANCE &&
         Math.abs(diffY) < MIN_SWIPE_DISTANCE
       ) {
-        return; // Not a significant swipe
+        return; // Ignore small movements
       }
 
-      // Determine swipe direction
+      let newDirection: "UP" | "DOWN" | "LEFT" | "RIGHT" | null = null;
+
       if (Math.abs(diffX) > Math.abs(diffY)) {
-        // Horizontal swipe
-        if (diffX > 0) {
-          changeDirection("RIGHT");
-        } else {
-          changeDirection("LEFT");
-        }
+        // Horizontal movement
+        newDirection = diffX > 0 ? "RIGHT" : "LEFT";
       } else {
-        // Vertical swipe
-        if (diffY > 0) {
-          changeDirection("DOWN");
-        } else {
-          changeDirection("UP");
-        }
+        // Vertical movement
+        newDirection = diffY > 0 ? "DOWN" : "UP";
       }
 
+      if (newDirection) {
+        changeDirection(newDirection);
+        // Update reference to avoid triggering the same direction multiple times in a row
+        touchStartRef.current = { x: currentX, y: currentY };
+      }
+    };
+
+    const handleTouchEnd = () => {
       touchStartRef.current = null;
     };
 
@@ -326,13 +326,15 @@ export const useGameLogic = () => {
       touchStartRef.current = null;
     };
 
-    // Add touch event listeners
+    // Add event listeners
     window.addEventListener("touchstart", handleTouchStart);
+    window.addEventListener("touchmove", handleTouchMove);
     window.addEventListener("touchend", handleTouchEnd);
     window.addEventListener("touchcancel", handleTouchCancel);
 
     return () => {
       window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
       window.removeEventListener("touchcancel", handleTouchCancel);
     };
