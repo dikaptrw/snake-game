@@ -7,7 +7,7 @@ export const title = "Snake - Play snake game online for free";
 export const url = "https://snake.dikaptrw.com/";
 export const description =
   "Play snake game online for free. No sign up required.";
-export const imageUrl = `/seo.png`;
+export const imageUrl = `/seo.webp`;
 export const imageType = "image/webp";
 export const imageWidth = "1200";
 export const imageHeight = "630";
