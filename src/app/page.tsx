@@ -4,7 +4,6 @@ import GameBoard from "@/components/GameBoard";
 import Menu from "@/components/Menu";
 import GameOver from "@/components/GameOver";
 import ScoreDisplay from "@/components/ScoreDisplay";
-import FoodAnimation from "@/components/FoodAnimation";
 import { useGameLogic } from "@/hooks/useGameLogic";
 
 export default function Home() {
@@ -41,8 +40,6 @@ export default function Home() {
             gridSize={gridSize}
             direction={gameState.direction}
           />
-
-          <FoodAnimation food={gameState.food} gridSize={gridSize} />
 
           {gameState.difficulty && (
             <ScoreDisplay

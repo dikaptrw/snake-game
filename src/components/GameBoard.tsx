@@ -1,5 +1,6 @@
 import React from "react";
 import { Direction, Position } from "@/types";
+import FoodAnimation from "./FoodAnimation";
 
 interface GameBoardProps {
   snake: Position[];
@@ -38,20 +39,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
       }}
     >
       {/* Render food */}
-      <div
-        className="absolute text-[#262E17] text-2xl font-bold select-none"
-        style={{
-          left: `${food.x * cellSize}px`,
-          top: `${food.y * cellSize}px`,
-          width: `${cellSize}px`,
-          height: `${cellSize}px`,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        +
-      </div>
+      <FoodAnimation food={food} gridSize={gridSize} />
 
       {/* Render snake */}
       {snake.map((segment, index) => (

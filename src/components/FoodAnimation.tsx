@@ -21,7 +21,15 @@ const FoodAnimation: React.FC<FoodAnimationProps> = ({ food }) => {
         alignItems: "center",
       }}
     >
-      +
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 14 14"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <rect x="0" y="0" width="15" height="15" fill="#000000" />
+        <rect x="2" y="2" width="4" height="4" fill="#ffffff" opacity="0.7" />
+      </svg>
     </div>
   );
 };
