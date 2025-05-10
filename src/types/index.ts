@@ -16,5 +16,12 @@ export interface GameState {
   score: number;
   gameStatus: GameStatus;
   difficulty: Difficulty | null;
-  highScore: Record<Difficulty, number>;
+  playerName: string;
+  highScore: Record<
+    Difficulty,
+    {
+      value: number;
+      playerName: string;
+    }
+  >;
 }

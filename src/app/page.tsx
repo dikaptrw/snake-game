@@ -8,19 +8,32 @@ import FoodAnimation from "@/components/FoodAnimation";
 import { useGameLogic } from "@/hooks/useGameLogic";
 
 export default function Home() {
-  const { gameState, initGame, resetGame, gridSize } = useGameLogic();
+  const { gameState, initGame, resetGame, gridSize, setPlayerName } =
+    useGameLogic();
 
   return (
     <main className="game-container">
       {gameState.gameStatus === "MENU" && (
-        <Menu onSelectDifficulty={initGame} highScore={gameState.highScore} />
+        <Menu
+          onSelectDifficulty={initGame}
+          highScore={gameState.highScore}
+          playerName={gameState.playerName}
+          setPlayerName={setPlayerName}
+        />
       )}
 
       {gameState.gameStatus === "PLAYING" && (
         <div className="relative game-board-container">
-          <h1 className="absolute inset-x-0 text-center bottom-full mb-4 sm:mb-6 text-2xl sm:text-3xl font-bold tracking-wider">
-            snake
-          </h1>
+          <div className="absolute top-0 inset-x-0 -translate-y-full">
+            <div className="flex w-full justify-between mb-3">
+              <div className="flex items-center gap-1 font-bold">
+                <div className="uppercase">Player:</div>
+                <div>{gameState.playerName}</div>
+              </div>
+
+              <div className="font-bold">D:{gameState.difficulty}</div>
+            </div>
+          </div>
 
           <GameBoard
             snake={gameState.snake}
@@ -36,6 +49,7 @@ export default function Home() {
               score={gameState.score}
               difficulty={gameState.difficulty}
               highScore={gameState.highScore}
+              playerName={gameState.playerName}
             />
           )}
         </div>
@@ -47,6 +61,7 @@ export default function Home() {
           difficulty={gameState.difficulty}
           onRestart={resetGame}
           highScore={gameState.highScore}
+          playerName={gameState.playerName}
         />
       )}
     </main>

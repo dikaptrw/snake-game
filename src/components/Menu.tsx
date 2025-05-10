@@ -1,10 +1,13 @@
 import React, { useState } from "react";
-import { Difficulty } from "@/types";
+import { Difficulty, GameState } from "@/types";
 import HighScore from "./HighScore";
+import GamePlayer from "./GamePlayer";
 
 interface MenuProps {
   onSelectDifficulty: (difficulty: Difficulty) => void;
-  highScore: Record<Difficulty, number>;
+  highScore: GameState["highScore"];
+  playerName: GameState["playerName"];
+  setPlayerName: (val: string) => void;
 }
 
 export enum MenuEnum {
@@ -13,7 +16,12 @@ export enum MenuEnum {
   PYTHON = "PYTHON",
 }
 
-const Menu: React.FC<MenuProps> = ({ onSelectDifficulty, highScore }) => {
+const Menu: React.FC<MenuProps> = ({
+  onSelectDifficulty,
+  highScore,
+  playerName,
+  setPlayerName,
+}) => {
   const [menuActive, setMenuActive] = useState<MenuEnum>(MenuEnum.SLUG);
 
   return (
@@ -22,7 +30,7 @@ const Menu: React.FC<MenuProps> = ({ onSelectDifficulty, highScore }) => {
         snake
       </h1>
 
-      <div className="text-xxs sm:text-xl font-bold mb-6 sm:mb-10">
+      <div className="text-xxs sm:text-xl font-bold mb-4 sm:mb-10">
         CHOOSE LEVEL:
       </div>
 
@@ -42,6 +50,8 @@ const Menu: React.FC<MenuProps> = ({ onSelectDifficulty, highScore }) => {
       </div>
 
       <HighScore highScore={highScore} />
+
+      <GamePlayer playerName={playerName} setPlayerName={setPlayerName} />
     </div>
   );
 };

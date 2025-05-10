@@ -1,10 +1,22 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { Direction, GameState, Position, Difficulty } from "@/types";
 import useDevice from "./useDevice";
+import {
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  setDoc,
+  updateDoc,
+} from "@firebase/firestore";
+import db from "@/utils/firestore";
+import { ENV } from "@/constants";
+import { DEFAULT_PLAYER_NAME } from "@/components/GamePlayer";
 
 // Define game constants
 const INITIAL_SNAKE_LENGTH = 3;
 const INITIAL_DIRECTION: Direction = "RIGHT";
+const HIGH_SCORE_STORAGE_KEY = "snakeHighScore";
 
 // Minimum swipe distance (in pixels) to register as a swipe
 const MIN_SWIPE_DISTANCE = 30;
@@ -27,52 +39,130 @@ export const useGameLogic = () => {
     score: 0,
     gameStatus: "MENU",
     difficulty: null,
+    playerName: "",
     highScore: {
-      SLUG: 0,
-      WORM: 0,
-      PYTHON: 0,
+      SLUG: {
+        value: 0,
+        playerName: "",
+      },
+      WORM: {
+        value: 0,
+        playerName: "",
+      },
+      PYTHON: {
+        value: 0,
+        playerName: "",
+      },
     },
   });
 
   const gameLoopRef = useRef<NodeJS.Timeout | null>(null);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const collectionRef = useMemo(() => {
+    return collection(db, "dikaptrw-profile", ENV, "games");
+  }, []);
+  const docRef = useMemo(() => {
+    return doc(collectionRef, process.env.NEXT_PUBLIC_SNAKE_GAME_DOC_ID);
+  }, [collectionRef]);
 
   // Handle first render for high score
   useEffect(() => {
-    const highScore = localStorage.getItem("highScore");
+    if (process.env.NEXT_PUBLIC_HIGH_SCORE_MODE === "firestore") {
+      getDoc(docRef).then((res) => {
+        const data = res.data();
 
-    if (highScore) {
-      setGameState((prevState) => ({
-        ...prevState,
-        highScore: JSON.parse(highScore),
-      }));
+        if (data) {
+          setGameState((prev) => ({
+            ...prev,
+            highScore: data.highScore,
+          }));
+        }
+      });
+
+      // Listen for changes in the Firestore document
+      const unsubscribe = onSnapshot(docRef, (data) => {
+        setGameState((prev) => ({
+          ...prev,
+          highScore: data.data()?.highScore || gameState.highScore,
+        }));
+      });
+
+      // Cleanup the listener when the component unmounts
+      return () => unsubscribe();
+    } else {
+      const highScore = localStorage.getItem(HIGH_SCORE_STORAGE_KEY);
+
+      if (highScore) {
+        setGameState((prevState) => ({
+          ...prevState,
+          highScore: JSON.parse(highScore),
+        }));
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Handle high score update on firestore
+  const updateHighScoreFirestore = useCallback(
+    (
+      highScore: Record<
+        Difficulty,
+        {
+          value: number;
+          playerName: string;
+        }
+      >
+    ) => {
+      getDoc(docRef).then((res) => {
+        if (res.exists()) {
+          updateDoc(docRef, { type: "snake", highScore });
+        } else {
+          setDoc(docRef, { type: "snake", highScore });
+        }
+      });
+    },
+    [docRef]
+  );
 
   // Handle high score
   const handleHighScore = useCallback(() => {
     if (!gameState.difficulty) return;
 
-    const currentHighScore = gameState.highScore[gameState.difficulty];
+    const currentHighScore =
+      gameState.highScore[gameState.difficulty].value || 0;
     const newHighScore = Math.max(currentHighScore, gameState.score);
 
-    // Save to local storage
-    localStorage.setItem(
-      "highScore",
-      JSON.stringify({
+    if (currentHighScore < newHighScore) {
+      const newFullHighScore: GameState["highScore"] = {
         ...gameState.highScore,
-        [gameState.difficulty]: newHighScore,
-      })
-    );
+        [gameState.difficulty!]: {
+          value: newHighScore,
+          playerName: gameState.playerName,
+        },
+      };
 
-    setGameState((prevState) => ({
-      ...prevState,
-      highScore: {
-        ...prevState.highScore,
-        [gameState.difficulty!]: newHighScore,
-      },
-    }));
-  }, [gameState.difficulty, gameState.highScore, gameState.score]);
+      if (process.env.NEXT_PUBLIC_HIGH_SCORE_MODE === "firestore") {
+        updateHighScoreFirestore(newFullHighScore);
+      } else {
+        // Save high score to local storage
+        localStorage.setItem(
+          HIGH_SCORE_STORAGE_KEY,
+          JSON.stringify(newFullHighScore)
+        );
+      }
+
+      setGameState((prevState) => ({
+        ...prevState,
+        highScore: newFullHighScore,
+      }));
+    }
+  }, [
+    gameState.difficulty,
+    gameState.highScore,
+    gameState.score,
+    updateHighScoreFirestore,
+    gameState.playerName,
+  ]);
 
   // Generate food at random position (not on snake)
   const generateFood = useCallback(
@@ -123,13 +213,27 @@ export const useGameLogic = () => {
         gameStatus: "PLAYING",
         difficulty,
         highScore: gameState.highScore,
+        playerName: gameState.playerName || DEFAULT_PLAYER_NAME,
       });
 
       // Set initial high score
       handleHighScore();
     },
-    [handleHighScore, gameState.highScore, generateFood, gridSize]
+    [
+      handleHighScore,
+      gameState.highScore,
+      generateFood,
+      gridSize,
+      gameState.playerName,
+    ]
   );
+
+  const setPlayerName = useCallback((name: string) => {
+    setGameState((prev) => ({
+      ...prev,
+      playerName: name,
+    }));
+  }, []);
 
   // Handle direction change
   const changeDirection = useCallback((newDirection: Direction) => {
@@ -266,6 +370,7 @@ export const useGameLogic = () => {
       gameStatus: "MENU",
       difficulty: null,
       highScore: gameState.highScore,
+      playerName: "",
     });
   }, [gameState.highScore]);
 
@@ -371,6 +476,9 @@ export const useGameLogic = () => {
   // Start/stop game loop based on game status
   useEffect(() => {
     if (gameState.gameStatus === "PLAYING") {
+      // if (!gameState.playerName) {
+      //   setPlayerName(DEFAULT_PLAYER_NAME);
+      // }
       startGameLoop();
     } else if (gameLoopRef.current) {
       clearInterval(gameLoopRef.current);
@@ -383,12 +491,18 @@ export const useGameLogic = () => {
         gameLoopRef.current = null;
       }
     };
-  }, [gameState.gameStatus, startGameLoop]);
+  }, [
+    gameState.gameStatus,
+    startGameLoop,
+    gameState.playerName,
+    setPlayerName,
+  ]);
 
   return {
     gameState,
     initGame,
     resetGame,
     gridSize,
+    setPlayerName,
   };
 };

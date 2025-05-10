@@ -1,10 +1,11 @@
-import React from "react";
-import { Difficulty } from "@/types";
+import React, { useMemo } from "react";
+import { Difficulty, GameState } from "@/types";
 
 interface ScoreDisplayProps {
+  playerName: string;
   score: number;
   difficulty: Difficulty;
-  highScore: Record<Difficulty, number>;
+  highScore: GameState["highScore"];
 }
 
 const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
@@ -12,12 +13,25 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
   difficulty,
   highScore,
 }) => {
+  const isNewHighScore = useMemo(() => {
+    return score > highScore[difficulty].value;
+  }, [score, highScore, difficulty]);
+
   return (
-    <div className="absolute inset-x-0 top-full mt-3 flex justify-between w-full text-black/75 text-sm sm:text-xl">
-      <div className="font-bold">HS:{highScore[difficulty]}</div>
-      <div className="flex items-center">
-        <div className="font-bold mr-2">{difficulty}</div>
-        <div className="font-bold">{score}</div>
+    <div className="absolute inset-x-0 top-full mt-3 flex justify-between w-full text-black/75 text-sm sm:text-base">
+      <div className="font-bold flex items-end">
+        <div>HS:</div>
+        <div>{highScore[difficulty].value || 0} </div>
+        {highScore[difficulty].playerName && (
+          <span className="text-sm">({highScore[difficulty].playerName})</span>
+        )}
+      </div>
+      <div className="font-bold flex items-end">
+        <div className="uppercase">Score: </div>
+        <div>{score}</div>
+        {isNewHighScore && (
+          <span className="text-sm animate-pulse uppercase">(New HI)</span>
+        )}
       </div>
     </div>
   );
