@@ -20,7 +20,7 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
   return (
     <div className="absolute inset-x-0 top-full mt-3 flex justify-between w-full text-black/75 text-sm sm:text-base">
       <div className="font-bold flex items-end">
-        <div>HS:</div>
+        <div>HI:</div>
         <div>{highScore[difficulty].value || 0} </div>
         {highScore[difficulty].playerName && (
           <span className="text-sm">({highScore[difficulty].playerName})</span>
