@@ -370,9 +370,9 @@ export const useGameLogic = () => {
       gameStatus: "MENU",
       difficulty: null,
       highScore: gameState.highScore,
-      playerName: "",
+      playerName: gameState.playerName,
     });
-  }, [gameState.highScore]);
+  }, [gameState.highScore, gameState.playerName]);
 
   // Handle touch input for mobile
   useEffect(() => {
