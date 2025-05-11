@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.1] - 2025-05-11
+
+### Fixes
+
+- Preserve playerName on game reset
+
+### Changes
+
+- Update copy text across UI components
+
 ## [1.2.0] - 2025-05-10
 
 ### Added
