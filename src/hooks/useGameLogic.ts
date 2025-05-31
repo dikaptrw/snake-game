@@ -464,6 +464,8 @@ export const useGameLogic = () => {
           changeDirection("RIGHT");
           break;
       }
+
+      e.preventDefault();
     };
 
     window.addEventListener("keydown", handleKeyDown);
